@@ -5,7 +5,7 @@ Este projeto é uma solução para o Case Prático do processo seletivo da AutoU
 A aplicação classifica os e-mails em categorias (Produtivo ou Improdutivo), extrai informações importantes do texto e sugere múltiplas opções de resposta, otimizando o tempo da equipe e aumentando a produtividade.
 
 # 🚀 Links de Acesso
-Aplicação na Nuvem: [Acesse a aplicação aqui] ```bash https://email-classifier-au8b.onrender.com/```
+Aplicação na Nuvem: [Acesse a aplicação aqui] ``` https://email-classifier-au8b.onrender.com/```
 
 Vídeo Demonstrativo: [Assista ao vídeo no YouTube](INSIRA O LINK DO SEU VÍDEO AQUI)
 

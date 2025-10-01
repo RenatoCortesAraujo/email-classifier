@@ -1,15 +1,15 @@
-Caixa de Entrada Inteligente com IA
-📝 Descrição
+# Caixa de Entrada Inteligente com IA
+# 📝 Descrição
 Este projeto é uma solução para o Case Prático do processo seletivo da AutoU. O objetivo é criar uma aplicação web que utiliza Inteligência Artificial para automatizar a leitura, classificação e resposta de e-mails, simulando um ambiente corporativo de alto volume de mensagens.
 
 A aplicação classifica os e-mails em categorias (Produtivo ou Improdutivo), extrai informações importantes do texto e sugere múltiplas opções de resposta, otimizando o tempo da equipe e aumentando a produtividade.
 
-🚀 Links de Acesso
+# 🚀 Links de Acesso
 Aplicação na Nuvem: [Acesse a aplicação aqui](INSIRA O LINK DA SUA APLICAÇÃO HOSPEDADA AQUI)
 
 Vídeo Demonstrativo: [Assista ao vídeo no YouTube](INSIRA O LINK DO SEU VÍDEO AQUI)
 
-✨ Funcionalidades
+# ✨ Funcionalidades
 Caixa de Entrada Realista: Interface com tema escuro, abas para e-mails "Recebidos" e "Enviados".
 
 Classificação com IA: Análise automática para categorizar e-mails em Produtivo (requer ação) ou Improdutivo.
@@ -30,7 +30,7 @@ Notificações Modernas: Feedbacks de sucesso ou erro através de notificações
 
 Interface Focada: O compositor de e-mail é escondido ao visualizar uma mensagem para uma melhor experiência de leitura.
 
-🛠️ Tecnologias Utilizadas
+# 🛠️ Tecnologias Utilizadas
 Backend: Python 3, Flask
 
 Inteligência Artificial: API da Groq (Modelo Llama 3.1)
@@ -41,7 +41,7 @@ Hospedagem: Render
 
 Dependências Python: Flask-Cors, Requests, python-dotenv, Gunicorn
 
-📂 Estrutura do Projeto
+# 📂 Estrutura do Projeto
 email-classifier/
 ├── .gitignore
 ├── README.md
@@ -51,9 +51,9 @@ email-classifier/
 │   ├── run.bat         # Script para rodar a aplicação
 │   └── setup.bat       # Script para configurar o ambiente
 └── templates/
-    └── index.html      # Interface do usuário
+    └── index.html      # Interface do usuário # 
 
-⚙️ Como Executar Localmente
+# ⚙️ Como Executar Localmente
 Siga os passos abaixo para rodar o projeto em seu computador.
 
 Pré-requisitos:

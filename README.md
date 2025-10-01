@@ -6,6 +6,7 @@ A aplicação classifica os e-mails em categorias (Produtivo ou Improdutivo), ex
 
 # 🚀 Links de Acesso
 Aplicação na Nuvem: [Acesse a aplicação aqui] ```bash https://email-classifier-au8b.onrender.com/```
+
 Vídeo Demonstrativo: [Assista ao vídeo no YouTube](INSIRA O LINK DO SEU VÍDEO AQUI)
 
 # ✨ Funcionalidades

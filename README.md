@@ -66,16 +66,16 @@ Python 3.x
 Git
 
 1. Clone o Repositório:
-
+```bash
 git clone [https://github.com/RenatoCortesAraujo/email-classifier.git](https://github.com/RenatoCortesAraujo/email-classifier.git)
 cd email-classifier
-
+```
 2. Configure o Ambiente (Windows):
 Execute o script de configuração para criar o ambiente virtual e instalar as dependências.
-
+```bash
 # Navegue até a pasta de scripts e execute o setup
 .\scripts\setup.bat
-
+```
 (Para outros sistemas, crie um ambiente virtual manualmente e instale as dependências com pip install -r requirements.txt)
 
 3. Crie o Arquivo de Variáveis de Ambiente:
@@ -83,10 +83,11 @@ Execute o script de configuração para criar o ambiente virtual e instalar as d
 Crie um arquivo chamado .env na raiz do projeto.
 
 Adicione sua chave da API da Groq dentro dele, como no exemplo abaixo:
-
+```bash
 GROQ_API_KEY="sua_chave_secreta_aqui"
-
+```
 4. Rode a Aplicação (Windows):
 Execute o script para iniciar o servidor.
-
+```bash
 .\scripts\run.bat
+```

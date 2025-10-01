@@ -283,13 +283,13 @@
              <div class="fab-option" id="fab-upload">
                 <span class="fab-option-label">Analisar E-mail (.txt)</span>
                 <div class="fab-option-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 </div>
             </div>
             <div class="fab-option" id="fab-compose">
                 <span class="fab-option-label">Escrever E-mail</span>
                 <div class="fab-option-icon">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                 </div>
             </div>
         </div>
@@ -299,7 +299,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const backendUrl = 'http://127.0.0.1:5001'; 
             const emailForm = document.getElementById('emailForm');
             const inboxList = document.getElementById('inbox-list');
             const sentList = document.getElementById('sent-list');
@@ -500,7 +499,7 @@
             async function handleProcessNewEmail() {
                 loadingOverlay.classList.add('visible');
                 try {
-                    const response = await fetch(`${backendUrl}/processar`, {
+                    const response = await fetch(`/processar`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ remetente: document.getElementById('remetente').value, assunto: document.getElementById('assunto').value, corpo: document.getElementById('corpo').value })
@@ -533,7 +532,7 @@
             // --- Inicialização ---
             async function fetchAndRenderEmails() {
                 try {
-                    const response = await fetch(`${backendUrl}/emails`);
+                    const response = await fetch(`/emails`);
                     inboxEmailsCache = await response.json();
                     renderInbox(inboxEmailsCache);
                 } catch (error) {

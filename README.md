@@ -43,6 +43,7 @@ Dependências Python: Flask-Cors, Requests, python-dotenv, Gunicorn
 
 # 📂 Estrutura do Projeto
 
+```bash
 email-classifier/
 ├── .gitignore
 ├── README.md
@@ -52,7 +53,8 @@ email-classifier/
 │   ├── run.bat         # Script para rodar a aplicação
 │   └── setup.bat       # Script para configurar o ambiente
 └── templates/
-    └── index.html 
+    └── index.html      # Interface do usuário
+   ``` 
 
 # ⚙️ Como Executar Localmente
 Siga os passos abaixo para rodar o projeto em seu computador.

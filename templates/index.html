@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixa de Entrada Inteligente</title>
+    <style>
+        :root {
+            /* Paleta de Cores - Tema Escuro */
+            --cor-fundo: #1a202c;
+            --cor-principal: #2d3748;
+            --cor-borda: #4a5568;
+            --cor-texto: #e2e8f0;
+            --cor-texto-secundario: #a0aec0;
+            --cor-primaria: #2b6cb0;
+            --cor-primaria-hover: #2c5282;
+            --cor-produtivo: #2b6cb0;
+            --cor-improdutivo: #718096;
+            --cor-sucesso: #38a169;
+            --cor-sucesso-hover: #2f855a;
+            --cor-erro: #c53030;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+        .sidebar {
+            width: 350px;
+            background-color: var(--cor-principal);
+            border-right: 1px solid var(--cor-borda);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .sidebar-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        .sidebar-search {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        #search-input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            box-sizing: border-box;
+        }
+        .sidebar-nav {
+            display: flex;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--cor-texto-secundario);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .nav-tab:hover { background-color: #4a5568; }
+        .nav-tab.active {
+            color: var(--cor-texto);
+            border-bottom-color: var(--cor-primaria);
+        }
+        #inbox-list, #sent-list {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        #sent-list { display: none; }
+        .email-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--cor-borda);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .email-item:hover { background-color: #4a5568; }
+        .email-item.active { background-color: var(--cor-primaria); }
+        .email-item.active h4, .email-item.active p { color: white; }
+        .email-item h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--cor-texto);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .email-item p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--cor-texto-secundario);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        #email-viewer, #composer {
+            background-color: var(--cor-principal);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--cor-borda);
+        }
+        #email-viewer { position: relative; }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--cor-texto-secundario);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-btn:hover { color: var(--cor-texto); }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 12px;
+            color: white;
+            margin-left: 10px;
+        }
+        .badge.produtivo { background-color: var(--cor-produtivo); }
+        .badge.improdutivo { background-color: var(--cor-improdutivo); }
+        #composer input, #composer textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid var(--cor-borda);
+            font-family: inherit;
+            font-size: 14px;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+        }
+        #composer textarea { min-height: 150px; resize: vertical; }
+        button {
+            background-color: var(--cor-primaria);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: var(--cor-primaria-hover); }
+        #sugestoes-list button {
+            background-color: var(--cor-sucesso);
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        #sugestoes-list button:hover { background-color: var(--cor-sucesso-hover); }
+        #loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        #loading-overlay.visible { visibility: visible; opacity: 1; }
+        /* Botão Flutuante (FAB) */
+        .fab-container { position: fixed; bottom: 30px; right: 30px; z-index: 999; }
+        .fab-options { display: flex; flex-direction: column; align-items: flex-end; margin-bottom: 15px; visibility: hidden; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
+        .fab-container.open .fab-options { visibility: visible; opacity: 1; transform: translateY(0); }
+        .fab-option { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
+        .fab-option-label { background-color: var(--cor-principal); color: var(--cor-texto); padding: 5px 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-right: 10px; font-size: 14px; font-weight: 500; }
+        .fab-option-icon, #fab-main { width: 56px; height: 56px; background-color: var(--cor-primaria); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; transition: all 0.3s ease; }
+        #fab-main { font-size: 24px; }
+        .fab-option-icon { width: 48px; height: 48px; font-size: 20px; background-color: #5a6268; }
+        .fab-container.open #fab-main { transform: rotate(45deg); background-color: #dc3545; }
+        /* Entidades */
+        #view-entidades {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--cor-borda);
+        }
+        .entidades-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .entidade-item {
+            background-color: var(--cor-fundo);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        .entidade-item strong { color: var(--cor-texto-secundario); }
+        /* Toast Notifications */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 1001; }
+        .toast { background-color: var(--cor-principal); color: var(--cor-texto); padding: 15px 20px; border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 10px; opacity: 0; transform: translateX(100%); transition: all 0.5s ease; border-left: 4px solid var(--cor-primaria); }
+        .toast.success { border-left-color: var(--cor-sucesso); }
+        .toast.error { border-left-color: var(--cor-erro); }
+        .toast.show { opacity: 1; transform: translateX(0); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Caixa de Entrada</h2>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" id="search-input" placeholder="Buscar e-mail...">
+            </div>
+            <div class="sidebar-nav">
+                <div class="nav-tab active" id="tab-inbox">Recebidos</div>
+                <div class="nav-tab" id="tab-sent">Enviados</div>
+            </div>
+            <div id="inbox-list"></div>
+            <div id="sent-list"></div>
+        </aside>
+
+        <main class="main-content">
+            <div id="composer">
+                <h3 id="composer-title">Novo E-mail (Simulação)</h3>
+                <form id="emailForm">
+                    <input type="email" id="remetente" placeholder="Para:" required>
+                    <input type="text" id="assunto" placeholder="Assunto" required>
+                    <textarea id="corpo" placeholder="Corpo do e-mail..." required></textarea>
+                    <button type="submit" id="composer-submit-btn">Enviar e Analisar</button>
+                </form>
+            </div>
+            
+            <hr id="composer-viewer-separator" style="margin: 30px 0; border: none; border-top: 1px solid var(--cor-borda);">
+
+            <div id="email-viewer" style="display: none;">
+                <span id="close-viewer-btn" class="close-btn">&times;</span>
+                <h3><span id="view-assunto"></span> <span id="view-badge" class="badge"></span></h3>
+                <p><strong>De:</strong> <span id="view-remetente"></span></p>
+                <div id="view-entidades" style="display: none;">
+                    <h4>Informações Principais:</h4>
+                    <div class="entidades-list" id="entidades-list"></div>
+                </div>
+                <div style="background-color: var(--cor-fundo); padding: 15px; border-radius: 5px; margin: 15px 0;">
+                    <p id="view-corpo" style="white-space: pre-wrap;"></p>
+                </div>
+                <div id="suggestion-box">
+                    <h4>Sugestões de Resposta:</h4>
+                    <div id="sugestoes-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="loading-overlay"><p>Analisando com IA...</p></div>
+    <div id="toast-container"></div>
+    
+    <div class="fab-container" id="fab-container">
+        <div class="fab-options">
+             <div class="fab-option" id="fab-upload">
+                <span class="fab-option-label">Analisar E-mail (.txt)</span>
+                <div class="fab-option-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+            </div>
+            <div class="fab-option" id="fab-compose">
+                <span class="fab-option-label">Escrever E-mail</span>
+                <div class="fab-option-icon">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                </div>
+            </div>
+        </div>
+        <div id="fab-main">+</div>
+    </div>
+    <input type="file" id="file-input" accept=".txt" style="display: none;">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backendUrl = 'http://127.0.0.1:5001'; 
+            const emailForm = document.getElementById('emailForm');
+            const inboxList = document.getElementById('inbox-list');
+            const sentList = document.getElementById('sent-list');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const composerSection = document.getElementById('composer');
+            const composerTitle = document.getElementById('composer-title');
+            const composerSubmitBtn = document.getElementById('composer-submit-btn');
+            const separator = document.getElementById('composer-viewer-separator');
+            
+            const emailViewer = document.getElementById('email-viewer');
+            const closeViewerBtn = document.getElementById('close-viewer-btn');
+            const viewAssunto = document.getElementById('view-assunto');
+            const viewBadge = document.getElementById('view-badge');
+            const viewRemetente = document.getElementById('view-remetente');
+            const viewCorpo = document.getElementById('view-corpo');
+            const viewEntidades = document.getElementById('view-entidades');
+            const entidadesList = document.getElementById('entidades-list');
+            const sugestoesList = document.getElementById('sugestoes-list');
+            const suggestionBox = document.getElementById('suggestion-box');
+            
+            const tabInbox = document.getElementById('tab-inbox');
+            const tabSent = document.getElementById('tab-sent');
+            const searchInput = document.getElementById('search-input');
+
+            let emailSelecionado = null; 
+            let isReplyMode = false;
+            let sentEmails = [];
+            let inboxEmailsCache = [];
+
+            // --- Lógica de UI ---
+            tabInbox.addEventListener('click', () => switchView('inbox'));
+            tabSent.addEventListener('click', () => switchView('sent'));
+            closeViewerBtn.addEventListener('click', closeEmailViewer);
+            searchInput.addEventListener('input', handleSearch);
+
+            function showToast(message, type = 'success') {
+                const toastContainer = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => { toast.classList.add('show'); }, 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 500);
+                }, 4000);
+            }
+
+            function switchView(view) {
+                tabInbox.classList.toggle('active', view === 'inbox');
+                tabSent.classList.toggle('active', view === 'sent');
+                inboxList.style.display = view === 'inbox' ? 'block' : 'none';
+                sentList.style.display = view === 'sent' ? 'block' : 'none';
+                handleSearch(); // Aplica o filtro na troca de aba
+                closeEmailViewer();
+            }
+
+            function closeEmailViewer() {
+                emailViewer.style.display = 'none';
+                composerSection.style.display = 'block';
+                separator.style.display = 'block';
+                document.querySelectorAll('.email-item').forEach(item => item.classList.remove('active'));
+                emailSelecionado = null;
+            }
+
+            function setComposerMode(mode) {
+                isReplyMode = (mode === 'reply');
+                composerTitle.textContent = isReplyMode ? 'Respondendo E-mail' : 'Novo E-mail (Simulação)';
+                composerSubmitBtn.textContent = isReplyMode ? 'Enviar Resposta' : 'Enviar e Analisar';
+            }
+
+            function handleSearch() {
+                const query = searchInput.value.toLowerCase();
+                const activeList = tabInbox.classList.contains('active') ? '#inbox-list' : '#sent-list';
+                document.querySelectorAll(`${activeList} .email-item`).forEach(item => {
+                    const textContent = item.textContent.toLowerCase();
+                    item.style.display = textContent.includes(query) ? 'block' : 'none';
+                });
+            }
+
+            // --- Lógica do FAB ---
+            const fabContainer = document.getElementById('fab-container');
+            const fabMain = document.getElementById('fab-main');
+            const fabCompose = document.getElementById('fab-compose');
+            const fabUpload = document.getElementById('fab-upload');
+            const fileInput = document.getElementById('file-input');
+
+            fabMain.addEventListener('click', () => fabContainer.classList.toggle('open'));
+            fabCompose.addEventListener('click', () => {
+                closeEmailViewer();
+                setComposerMode('new');
+                emailForm.reset();
+                composerSection.scrollIntoView({ behavior: 'smooth' });
+                fabContainer.classList.remove('open');
+            });
+            fabUpload.addEventListener('click', () => { fileInput.click(); fabContainer.classList.remove('open'); });
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file && file.type === "text/plain") {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setComposerMode('new');
+                        document.getElementById('remetente').value = 'upload@arquivo.com';
+                        document.getElementById('assunto').value = file.name;
+                        document.getElementById('corpo').value = e.target.result;
+                        handleProcessNewEmail(); 
+                    };
+                    reader.readAsText(file);
+                } else if (file) { showToast('Por favor, selecione um arquivo .txt', 'error'); }
+                event.target.value = null; 
+            });
+
+            // --- Renderização ---
+            function renderInbox(emails) {
+                inboxList.innerHTML = '';
+                emails.forEach(email => inboxList.appendChild(createEmailItem(email, 'inbox')));
+            }
+
+            function renderSent() {
+                sentList.innerHTML = '';
+                [...sentEmails].reverse().forEach(email => sentList.appendChild(createEmailItem(email, 'sent')));
+            }
+
+            function createEmailItem(email, type) {
+                const emailDiv = document.createElement('div');
+                emailDiv.className = 'email-item';
+                emailDiv.innerHTML = `<h4>${email.assunto}</h4><p>${type === 'inbox' ? `De: ${email.remetente}` : `Para: ${email.remetente}`}</p>`;
+                emailDiv.addEventListener('click', () => {
+                    displayEmail(email, type);
+                    document.querySelectorAll('.email-item').forEach(item => item.classList.remove('active'));
+                    emailDiv.classList.add('active');
+                });
+                return emailDiv;
+            }
+            
+            function displayEmail(email, type) {
+                emailSelecionado = email;
+                viewAssunto.textContent = email.assunto;
+                viewRemetente.textContent = email.remetente;
+                viewCorpo.textContent = email.corpo;
+                composerSection.style.display = 'none';
+                separator.style.display = 'none';
+
+                if (type === 'inbox') {
+                    // Preenche entidades
+                    entidadesList.innerHTML = '';
+                    const hasEntidades = email.entidades && Object.keys(email.entidades).length > 0;
+                    if (hasEntidades) {
+                        Object.entries(email.entidades).forEach(([key, value]) => {
+                            const item = document.createElement('div');
+                            item.className = 'entidade-item';
+                            item.innerHTML = `<strong>${key.replace('_', ' ')}:</strong> ${value}`;
+                            entidadesList.appendChild(item);
+                        });
+                        viewEntidades.style.display = 'block';
+                    } else {
+                        viewEntidades.style.display = 'none';
+                    }
+
+                    // Preenche sugestões
+                    sugestoesList.innerHTML = '';
+                    if (email.sugestao_resposta && email.categoria.toLowerCase() === 'produtivo') {
+                        email.sugestao_resposta.forEach(sugestao => {
+                            const btn = document.createElement('button');
+                            btn.textContent = sugestao;
+                            btn.onclick = () => useSuggestion(sugestao);
+                            sugestoesList.appendChild(btn);
+                        });
+                    }
+                    
+                    suggestionBox.style.display = 'block';
+                    viewBadge.textContent = email.categoria;
+                    viewBadge.className = 'badge';
+                    viewBadge.classList.add(email.categoria.toLowerCase());
+                    viewBadge.style.display = 'inline-block';
+                } else {
+                    suggestionBox.style.display = 'none';
+                    viewBadge.style.display = 'none';
+                    viewEntidades.style.display = 'none';
+                }
+                emailViewer.style.display = 'block';
+            }
+            
+            function useSuggestion(suggestionText) {
+                if (!emailSelecionado) return;
+                setComposerMode('reply');
+                document.getElementById('remetente').value = emailSelecionado.remetente;
+                document.getElementById('assunto').value = `Re: ${emailSelecionado.assunto}`;
+                document.getElementById('corpo').value = suggestionText;
+                closeEmailViewer();
+                composerSection.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('assunto').focus();
+            }
+
+            // --- Lógica de Submissão ---
+            emailForm.addEventListener('submit', (e) => { e.preventDefault(); isReplyMode ? handleSendReply() : handleProcessNewEmail(); });
+
+            async function handleProcessNewEmail() {
+                loadingOverlay.classList.add('visible');
+                try {
+                    const response = await fetch(`${backendUrl}/processar`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ remetente: document.getElementById('remetente').value, assunto: document.getElementById('assunto').value, corpo: document.getElementById('corpo').value })
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Erro no servidor');
+                    }
+                    emailForm.reset();
+                    setComposerMode('new');
+                    showToast('E-mail analisado com sucesso!');
+                    await fetchAndRenderEmails();
+                    switchView('inbox');
+                } catch (error) {
+                    showToast(`Falha: ${error.message}`, 'error');
+                } finally {
+                    loadingOverlay.classList.remove('visible');
+                }
+            }
+            
+            function handleSendReply() {
+                sentEmails.push({ remetente: document.getElementById('remetente').value, assunto: document.getElementById('assunto').value, corpo: document.getElementById('corpo').value });
+                emailForm.reset();
+                setComposerMode('new');
+                renderSent();
+                switchView('sent');
+                showToast('Resposta enviada com sucesso!');
+            }
+            
+            // --- Inicialização ---
+            async function fetchAndRenderEmails() {
+                try {
+                    const response = await fetch(`${backendUrl}/emails`);
+                    inboxEmailsCache = await response.json();
+                    renderInbox(inboxEmailsCache);
+                } catch (error) {
+                    console.error('Erro ao buscar emails:', error);
+                    showToast('Falha ao carregar e-mails. Verifique o servidor.', 'error');
+                }
+            }
+            fetchAndRenderEmails();
+        });
+    </script>
+</body>
+</html>
+

@@ -70,7 +70,7 @@ cd email-classifier
 2. Configure o Ambiente (Windows):
 Execute o script de configuração para criar o ambiente virtual e instalar as dependências.
 
-# Navegue até a pasta de scripts e execute o setup
+Navegue até a pasta de scripts e execute o setup
 .\scripts\setup.bat
 
 (Para outros sistemas, crie um ambiente virtual manualmente e instale as dependências com pip install -r requirements.txt)
@@ -79,7 +79,7 @@ Execute o script de configuração para criar o ambiente virtual e instalar as d
 
 Crie um arquivo chamado .env na raiz do projeto.
 
-Adicione sua chave da API da Groq dentro dele, como no exemplo abaixo:
+Adicione sua chave da API da Groq dentro dele, como no exemplo abaixo: (https://groq.com/)
 
 GROQ_API_KEY="sua_chave_secreta_aqui"
 
